@@ -1,0 +1,8 @@
+{
+  "DSN": "root:@tcp(localhost:3306)/golang?charset=utf8mb4&parseTime=True&loc=Local",
+  "Port": 8088,
+  "ConsoleLoggingEnabled": true,
+  "FileLoggingEnabled": true,
+  "LogDirectory": "D:/logs",
+  "LogMaxAge": 7
+}
