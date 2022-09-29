@@ -3,6 +3,7 @@ package services
 import (
 	c "github.com/herokh/golang-api/configs"
 	m "github.com/herokh/golang-api/models"
+	"github.com/herokh/golang-api/repositories"
 )
 
 type AlbumService interface {
@@ -12,30 +13,28 @@ type AlbumService interface {
 }
 
 type albumService struct {
-	Logger *c.Logger
-	Db     *c.Database
+	Logger          *c.Logger
+	AlbumRepository repositories.AlbumRepository
 }
 
-func NewAlbumService(logger *c.Logger, db *c.Database) AlbumService {
+func NewAlbumService(logger *c.Logger, albumRepository repositories.AlbumRepository) AlbumService {
 	return &albumService{
-		Logger: logger,
-		Db:     db,
+		Logger:          logger,
+		AlbumRepository: albumRepository,
 	}
 }
 
 func (service *albumService) GetAlbums() []m.Album {
-	var albums []m.Album
-	service.Db.DbContext.Find(&albums)
+	albums := service.AlbumRepository.GetAll()
 	return albums
 }
 
 func (service *albumService) GetAlbumByID(id uint) m.Album {
-	var album m.Album
-	service.Db.DbContext.Find(&album, id)
+	album := service.AlbumRepository.GetByID(id)
 	return album
 }
 
 func (service *albumService) PostAlbum(model m.Album) uint {
-	service.Db.DbContext.Create(&model)
-	return model.ID
+	id := service.AlbumRepository.Post(model)
+	return id
 }

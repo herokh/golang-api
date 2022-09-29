@@ -9,6 +9,7 @@ import (
 	c "github.com/herokh/golang-api/configs"
 	d "github.com/herokh/golang-api/dtos"
 	m "github.com/herokh/golang-api/models"
+	"github.com/herokh/golang-api/repositories"
 	s "github.com/herokh/golang-api/services"
 	u "github.com/herokh/golang-api/utils"
 	v "github.com/herokh/golang-api/views"
@@ -34,7 +35,7 @@ func NewAlbumController(logger *c.Logger, db *c.Database) AlbumController {
 
 func (controller *albumController) GetAlbums(c *gin.Context) {
 	controller.Logger.Info().Msg("Running GetAlbums")
-	service := s.NewAlbumService(controller.Logger, controller.Db)
+	service := newAlbumService(controller)
 	albums := service.GetAlbums()
 	views := u.Map(albums, func(m m.Album) v.Album {
 		return m.ToEntity()
@@ -46,7 +47,7 @@ func (controller *albumController) GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 	iduint, _ := strconv.ParseUint(id, 10, 32)
 	controller.Logger.Info().Msg(fmt.Sprintf("Running GetAlbumByID %s", id))
-	service := s.NewAlbumService(controller.Logger, controller.Db)
+	service := newAlbumService(controller)
 	album := service.GetAlbumByID(uint(iduint))
 	if album.ID == 0 {
 		c.Status(http.StatusNotFound)
@@ -65,7 +66,13 @@ func (controller *albumController) PostAlbums(c *gin.Context) {
 		return
 	}
 	model := m.Album{}.FromDto(dto)
-	service := s.NewAlbumService(controller.Logger, controller.Db)
+	service := newAlbumService(controller)
 	id := service.PostAlbum(model)
 	c.JSON(http.StatusCreated, id)
+}
+
+func newAlbumService(controller *albumController) s.AlbumService {
+	service := s.NewAlbumService(controller.Logger,
+		repositories.NewAlbumRepository(controller.Logger, controller.Db))
+	return service
 }
