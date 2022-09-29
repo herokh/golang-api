@@ -1,8 +1,12 @@
 package services
 
 import (
-	"github.com/herokh/go-playground/configs"
-	"github.com/herokh/go-playground/models"
+	"strconv"
+	"time"
+
+	"github.com/golang-jwt/jwt/v4"
+	"github.com/herokh/golang-api/configs"
+	"github.com/herokh/golang-api/models"
 )
 
 type AuthService interface {
@@ -12,12 +16,14 @@ type AuthService interface {
 type authService struct {
 	Logger *configs.Logger
 	Db     *configs.Database
+	Config *configs.AppConfiguration
 }
 
-func NewAuthService(logger *configs.Logger, db *configs.Database) AuthService {
+func NewAuthService(logger *configs.Logger, db *configs.Database, config *configs.AppConfiguration) AuthService {
 	return &authService{
 		Logger: logger,
 		Db:     db,
+		Config: config,
 	}
 }
 
@@ -27,5 +33,17 @@ func (service *authService) Login(email string, password string) string {
 	if model.ID == 0 {
 		return ""
 	}
-	return "TEST_TOKEN"
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.RegisteredClaims{
+		ID:        strconv.Itoa(int(model.ID)),
+		Subject:   email,
+		Issuer:    "golang-api",
+		IssuedAt:  jwt.NewNumericDate(time.Now()),
+		ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * 15)),
+	})
+
+	secret := []byte(service.Config.AuthSecret)
+	signedToken, _ := token.SignedString(secret)
+
+	return signedToken
 }

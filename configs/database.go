@@ -1,7 +1,7 @@
 package configs
 
 import (
-	m "github.com/herokh/go-playground/models"
+	m "github.com/herokh/golang-api/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )

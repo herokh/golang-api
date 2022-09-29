@@ -6,12 +6,12 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	c "github.com/herokh/go-playground/configs"
-	d "github.com/herokh/go-playground/dtos"
-	m "github.com/herokh/go-playground/models"
-	s "github.com/herokh/go-playground/services"
-	u "github.com/herokh/go-playground/utils"
-	v "github.com/herokh/go-playground/views"
+	c "github.com/herokh/golang-api/configs"
+	d "github.com/herokh/golang-api/dtos"
+	m "github.com/herokh/golang-api/models"
+	s "github.com/herokh/golang-api/services"
+	u "github.com/herokh/golang-api/utils"
+	v "github.com/herokh/golang-api/views"
 )
 
 type AlbumController interface {

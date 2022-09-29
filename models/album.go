@@ -1,8 +1,8 @@
 package models
 
 import (
-	"github.com/herokh/go-playground/dtos"
-	"github.com/herokh/go-playground/views"
+	"github.com/herokh/golang-api/dtos"
+	"github.com/herokh/golang-api/views"
 	"gorm.io/gorm"
 )
 

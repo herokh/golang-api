@@ -5,8 +5,8 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	c "github.com/herokh/go-playground/configs"
-	r "github.com/herokh/go-playground/routers"
+	c "github.com/herokh/golang-api/configs"
+	r "github.com/herokh/golang-api/routers"
 )
 
 func main() {

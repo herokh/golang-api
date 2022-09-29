@@ -1,8 +1,8 @@
 package services
 
 import (
-	c "github.com/herokh/go-playground/configs"
-	m "github.com/herokh/go-playground/models"
+	c "github.com/herokh/golang-api/configs"
+	m "github.com/herokh/golang-api/models"
 )
 
 type AlbumService interface {

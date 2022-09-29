@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	c "github.com/herokh/go-playground/configs"
-	"github.com/herokh/go-playground/dtos"
-	"github.com/herokh/go-playground/services"
+	c "github.com/herokh/golang-api/configs"
+	"github.com/herokh/golang-api/dtos"
+	"github.com/herokh/golang-api/services"
 )
 
 type AuthController interface {
@@ -16,12 +16,14 @@ type AuthController interface {
 type authController struct {
 	Logger *c.Logger
 	Db     *c.Database
+	Config *c.AppConfiguration
 }
 
-func NewAuthController(logger *c.Logger, db *c.Database) AuthController {
+func NewAuthController(logger *c.Logger, db *c.Database, config *c.AppConfiguration) AuthController {
 	return &authController{
 		Logger: logger,
 		Db:     db,
+		Config: config,
 	}
 }
 
@@ -32,7 +34,7 @@ func (controller *authController) Login(c *gin.Context) {
 		c.Status(http.StatusBadRequest)
 		return
 	}
-	service := services.NewAuthService(controller.Logger, controller.Db)
+	service := services.NewAuthService(controller.Logger, controller.Db, controller.Config)
 	accessToken := service.Login(dto.Email, dto.Password)
 	if accessToken == "" {
 		c.Status(http.StatusBadRequest)

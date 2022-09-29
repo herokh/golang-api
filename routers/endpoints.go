@@ -2,16 +2,18 @@ package routers
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/herokh/go-playground/configs"
-	"github.com/herokh/go-playground/controllers"
-	"github.com/herokh/go-playground/middlewares"
+	"github.com/herokh/golang-api/configs"
+	"github.com/herokh/golang-api/controllers"
+	"github.com/herokh/golang-api/middlewares"
 )
 
 func MapEndpoints(g *gin.Engine, logger *configs.Logger, db *configs.Database, config *configs.AppConfiguration) {
 
-	authController := controllers.NewAuthController(logger, db)
+	authController := controllers.NewAuthController(logger, db, config)
 	g.POST("/login", authController.Login)
-	protected := g.Group("/", middlewares.AuthorizationMiddleware)
+	protected := g.Group("/", func(ctx *gin.Context) {
+		middlewares.AuthorizationMiddleware(ctx, config)
+	})
 
 	// Albums
 	albumController := controllers.NewAlbumController(logger, db)

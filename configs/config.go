@@ -8,12 +8,20 @@ import (
 )
 
 type AppConfiguration struct {
-	DSN                   string `env:"APP_DSN"`
-	Port                  int    `env:"APP_PORT"`
+	// application
+	Port int `env:"APP_PORT"`
+
+	// database
+	DSN string `env:"DB_DSN"`
+
+	// logging
 	ConsoleLoggingEnabled bool
 	FileLoggingEnabled    bool
 	LogDirectory          string
 	LogMaxAge             int
+
+	// auth
+	AuthSecret string `env:"AUTH_SECRET"`
 }
 
 func GetConfiguration() *AppConfiguration {

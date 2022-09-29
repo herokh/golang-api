@@ -4,5 +4,6 @@
   "ConsoleLoggingEnabled": true,
   "FileLoggingEnabled": true,
   "LogDirectory": "D:/logs",
-  "LogMaxAge": 7
+  "LogMaxAge": 7,
+  "AuthSecret": "SECRET"
 }
