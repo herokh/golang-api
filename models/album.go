@@ -1,7 +1,8 @@
 package models
 
 import (
-	v "github.com/herokh/go-playground/views"
+	"github.com/herokh/go-playground/dtos"
+	"github.com/herokh/go-playground/views"
 	"gorm.io/gorm"
 )
 
@@ -13,8 +14,8 @@ type Album struct {
 	gorm.Model
 }
 
-func (album Album) ToEntity() v.Album {
-	return v.Album{
+func (album Album) ToEntity() views.Album {
+	return views.Album{
 		ID:     album.ID,
 		Title:  album.Title,
 		Artist: album.Artist,
@@ -22,11 +23,10 @@ func (album Album) ToEntity() v.Album {
 	}
 }
 
-func (entity Album) FromEntity(album v.Album) Album {
+func (entity Album) FromDto(dto dtos.AlbumDto) Album {
 	return Album{
-		ID:     album.ID,
-		Title:  album.Title,
-		Artist: album.Artist,
-		Price:  album.Price,
+		Title:  dto.Title,
+		Artist: dto.Artist,
+		Price:  dto.Price,
 	}
 }

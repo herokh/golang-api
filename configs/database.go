@@ -11,7 +11,9 @@ type Database struct {
 }
 
 func (db *Database) AutoMigrate() {
-	db.DbContext.AutoMigrate(&m.Album{})
+	db.DbContext.AutoMigrate(
+		&m.Album{},
+		&m.User{})
 }
 
 func NewMysql(config *AppConfiguration) *Database {

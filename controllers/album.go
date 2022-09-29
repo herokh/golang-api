@@ -1,61 +1,71 @@
 package controllers
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	c "github.com/herokh/go-playground/configs"
+	d "github.com/herokh/go-playground/dtos"
 	m "github.com/herokh/go-playground/models"
 	s "github.com/herokh/go-playground/services"
 	u "github.com/herokh/go-playground/utils"
 	v "github.com/herokh/go-playground/views"
 )
 
-type AlbumController struct {
+type AlbumController interface {
+	GetAlbums(c *gin.Context)
+	GetAlbumByID(c *gin.Context)
+	PostAlbums(c *gin.Context)
+}
+
+type albumController struct {
 	Logger *c.Logger
 	Db     *c.Database
 }
 
-func NewAlbumController(logger *c.Logger, db *c.Database) *AlbumController {
-	return &AlbumController{
+func NewAlbumController(logger *c.Logger, db *c.Database) AlbumController {
+	return &albumController{
 		Logger: logger,
 		Db:     db,
 	}
 }
 
-func (controller *AlbumController) GetAlbums(c *gin.Context) {
+func (controller *albumController) GetAlbums(c *gin.Context) {
 	controller.Logger.Info().Msg("Running GetAlbums")
 	service := s.NewAlbumService(controller.Logger, controller.Db)
 	albums := service.GetAlbums()
 	views := u.Map(albums, func(m m.Album) v.Album {
 		return m.ToEntity()
 	})
-	c.IndentedJSON(http.StatusOK, views)
+	c.JSON(http.StatusOK, views)
 }
 
-func (controller *AlbumController) GetAlbumByID(c *gin.Context) {
+func (controller *albumController) GetAlbumByID(c *gin.Context) {
 	id := c.Param("id")
 	iduint, _ := strconv.ParseUint(id, 10, 32)
 	controller.Logger.Info().Msg(fmt.Sprintf("Running GetAlbumByID %s", id))
 	service := s.NewAlbumService(controller.Logger, controller.Db)
 	album := service.GetAlbumByID(uint(iduint))
-	if album.ID != 0 {
-		c.IndentedJSON(http.StatusOK, album.ToEntity())
+	if album.ID == 0 {
+		c.Status(http.StatusNotFound)
 		return
 	}
-	c.IndentedJSON(http.StatusNotFound, gin.H{"message": "album not found"})
+	c.JSON(http.StatusOK, album.ToEntity())
+
 }
 
-func (controller *AlbumController) PostAlbums(c *gin.Context) {
+func (controller *albumController) PostAlbums(c *gin.Context) {
 	controller.Logger.Info().Msg("Running PostAlbums")
-	var view v.Album
-	json.NewDecoder(c.Request.Body).Decode(&view)
-	model := m.Album{}.FromEntity(view)
+	var dto d.AlbumDto
+	err := c.ShouldBind(&dto)
+	if err != nil {
+		c.Status(http.StatusBadRequest)
+		return
+	}
+	model := m.Album{}.FromDto(dto)
 	service := s.NewAlbumService(controller.Logger, controller.Db)
 	id := service.PostAlbum(model)
-	view.ID = id
-	c.IndentedJSON(http.StatusCreated, view)
+	c.JSON(http.StatusCreated, id)
 }
